@@ -8,14 +8,10 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import dynamic from 'next/dynamic';
 import "easymde/dist/easymde.min.css";
-const SimpleMDE =dynamic(
-    ()=>import('react-simplemde-editor'),
-    {ssr:false}
-)
+import SimpleMDE from 'react-simplemde-editor';
 
-import {ErrorMessage} from '@/app/components';
+import { ErrorMessage } from '@/app/components';
 import { IssueSchema } from '@/app/validationSchemas';
 import { Issue } from '@prisma/client';
   
