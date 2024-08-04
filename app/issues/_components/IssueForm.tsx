@@ -50,7 +50,7 @@ const IssueForm = ({issue}:Props) => {
                     else{
                         await axios.post('/api/issues',data);
                     }
-                    router.push('/issues') 
+                    router.push('/issues/list') 
                 } catch (error) {
                     setSubmitting(false)
                     setError('An unexpected error occured')
