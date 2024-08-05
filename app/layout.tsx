@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Navbar from "./Navbar";
 import AuthProvider from './auth/Provider';
+import QueryClientProvider from './QueryClientProvider';
 
 
 const inter = Inter({ 
@@ -26,17 +27,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AuthProvider>
-        <body className={inter.variable}>
-            <Theme appearance='light' accentColor='violet'>
-              <Navbar/>
-              <main className="px-4">
-              <Container>{children}</Container> 
-              </main>
-              {/* <ThemePanel/> */}
-            </Theme>
-          </body>
+      <body className={inter.variable}>
+        <QueryClientProvider>
+        <AuthProvider>
+          <Theme appearance='light' accentColor='violet'>
+            <Navbar />
+            <main className="px-4">
+              <Container>{children}</Container>
+            </main>
+            {/* <ThemePanel/> */}
+          </Theme>
         </AuthProvider>
+        </QueryClientProvider>
+      </body>
     </html>
   );
 }
