@@ -1,8 +1,43 @@
-import Image from "next/image";
-import Pagination from "./components/Pagination";
+import prisma from '@/prisma/client';
+import IssueSummary from './IssueSummary';
+import LatestIssues from './LatestIssue';
+import IssueChart from './IssueCharts';
+import { Flex, Grid } from '@radix-ui/themes';
+import { Metadata } from 'next';
 
-export default function Home({searchParams}:{searchParams:{page:string}}) {
+export default async function Home() {
+  const open = await prisma.issue.count({
+    where: { Status: 'OPEN' },
+  });
+  const inProgress = await prisma.issue.count({
+    where: { Status: 'IN_PROGRESS' },
+  });
+  const closed = await prisma.issue.count({
+    where: { Status: 'CLOSED' },
+  });
+
   return (
-   <Pagination itemCount={100} pageSize={10} currentPage={parseInt(searchParams.page)}/>
+    <Grid columns={{ initial: '1', md: '2' }} gap="5">
+      <Flex direction="column" gap="5">
+        <IssueSummary
+          open={open}
+          inProgress={inProgress}
+          closed={closed}
+        />
+        <IssueChart
+          open={open}
+          inProgress={inProgress}
+          closed={closed}
+        />
+      </Flex>
+      <LatestIssues />
+    </Grid>
   );
 }
+
+export const dynamic = 'force-dynamic'; 
+
+export const metadata: Metadata = {
+  title: 'Issue Tracker - Dashboard',
+  description: 'View a summary of project issues'
+};
