@@ -7,6 +7,8 @@ import {
   XAxis,
   YAxis,
   Bar,
+  Tooltip,
+  CartesianGrid
 } from 'recharts';
 import React from 'react';
 
@@ -28,7 +30,9 @@ const IssueChart = ({ open, inProgress, closed }: Props) => {
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
           <XAxis dataKey="label" />
+          <CartesianGrid strokeDasharray="3 3" />
           <YAxis />
+          <Tooltip/>
           <Bar
             dataKey="value"
             barSize={60}

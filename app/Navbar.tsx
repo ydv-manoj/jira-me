@@ -17,7 +17,8 @@ const Navbar = () => {
     const currPath=usePathname()
     const links=[
         {label:'Dashboard',href:'/'},
-        {label:'Issues',href:'/issues/list'}
+        {label:'Issues',href:'/issues/list'},
+        {label:'Kanban',href:'/kanban'}
     ]
   return (
     <nav className=' border-b mb-5 px-5 py-3'>
