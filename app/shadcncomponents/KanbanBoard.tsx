@@ -23,16 +23,22 @@ import type { Column } from "./BoardColumn";
 import { hasDraggableData } from "./utils";
 import { coordinateGetter } from "./multipleContainersKeyboardPreset";
 import { Card } from "@radix-ui/themes";
-import { Issue, Status } from "@prisma/client";
+import { Issue, Status, User } from "@prisma/client";
+import prisma from "@/prisma/client";
+import axios from "axios";
+
+type IssueWithUser = Issue & {
+  assignedToUser: User | null;
+};
 
 type KanbanBoardProps = {
-  issues: Issue[];
+  issues:IssueWithUser[]
 };
 
 const defaultCols: Column[] = [
   {
     id: "open" as ColumnId,
-    title: "Todo",
+    title: "Open",
   },
   {
     id: "in_progress" as ColumnId,
@@ -40,7 +46,7 @@ const defaultCols: Column[] = [
   },
   {
     id: "closed" as ColumnId,
-    title: "Done",
+    title: "Closed",
   },
 ];
 
@@ -52,6 +58,7 @@ export type Task = {
   content: string;
   description: string;
   assignedToUserId: string | null;
+  assignedToUser: User | null
 };
 
 interface ColumnData {
@@ -78,6 +85,7 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
       content: issue.title,
       description: issue.description,
       assignedToUserId: issue.assignedToUserId,
+      assignedToUser: issue.assignedToUser as User || null
     }))
   );
 
@@ -258,7 +266,7 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
     }
   }
 
-  function onDragEnd(event: DragEndEvent) {
+  async function onDragEnd(event: DragEndEvent) {
     setActiveColumn(null);
     setActiveTask(null);
 
@@ -270,19 +278,55 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
 
     if (!hasDraggableData(active)) return;
 
-    const activeData = active.data.current;
+    const activeData = active.data.current as DragData;
+    const overData = over.data.current as DragData;
 
     if (activeId === overId) return;
 
     const isActiveAColumn = activeData?.type === "Column";
-    if (!isActiveAColumn) return;
+    const isActiveATask = activeData?.type === "Task";
+    const isOverAColumn = overData?.type === "Column";
 
-    setColumns((columns) => {
-      const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
-      const overColumnIndex = columns.findIndex((col) => col.id === overId);
-      return arrayMove(columns, activeColumnIndex, overColumnIndex);
-    });
+    if (isActiveAColumn) {
+      // Handle column reordering (remains the same)
+      setColumns((columns) => {
+        const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
+        const overColumnIndex = columns.findIndex((col) => col.id === overId);
+        return arrayMove(columns, activeColumnIndex, overColumnIndex);
+      });
+    }
+
+    if (isActiveATask) {
+      const newColumnId = isOverAColumn 
+        ? overId as ColumnId 
+        : (overData as TaskData).task.columnId;
+
+      // Update the task status via the API
+      try {
+        const response = await axios.put(`/api/UpdateStatus/${activeId}`, {
+          status: newColumnId.toUpperCase()
+        });
+
+        if (response.status === 200) {
+          // Update the local state
+          setTasks((tasks) =>
+            tasks.map((task) =>
+              task.id === activeId
+                ? { ...task, columnId: newColumnId }
+                : task
+            )
+          );
+        } else {
+          console.error("Failed to update task status");
+        }
+      } catch (error) {
+        console.error("Error updating task status:", error);
+      }
+    }
   }
+  
+  
+  
 
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;

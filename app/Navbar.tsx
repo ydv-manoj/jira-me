@@ -13,7 +13,6 @@ import {Skeleton} from '@/app/components'
 
 const Navbar = () => {
     const {status,data:session}=useSession()
-    console.log(session)
     const currPath=usePathname()
     const links=[
         {label:'Dashboard',href:'/'},

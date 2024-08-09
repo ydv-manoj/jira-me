@@ -1,5 +1,3 @@
-// BoardColumn.tsx
-import React from 'react';
 import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Task, TaskCard } from './TaskCard';
