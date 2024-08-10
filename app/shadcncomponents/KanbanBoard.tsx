@@ -1,33 +1,31 @@
 "use client"
-import { useMemo, useRef, useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { BoardColumn, BoardContainer } from "./BoardColumn";
 import {
+  Announcements,
   DndContext,
   type DragEndEvent,
   type DragOverEvent,
   DragOverlay,
   type DragStartEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  UniqueIdentifier,
   useSensor,
   useSensors,
-  KeyboardSensor,
-  Announcements,
-  UniqueIdentifier,
-  TouchSensor,
-  MouseSensor,
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import { TaskCard } from "./TaskCard";
-import type { Column } from "./BoardColumn";
-import { hasDraggableData } from "./utils";
-import { coordinateGetter } from "./multipleContainersKeyboardPreset";
+import { Issue, User } from "@prisma/client";
 import { Card } from "@radix-ui/themes";
-import { Issue, Status, User } from "@prisma/client";
-import prisma from "@/prisma/client";
 import axios from "axios";
+import type { Column } from "./BoardColumn";
+import { BoardColumn, BoardContainer } from "./BoardColumn";
+import { coordinateGetter } from "./multipleContainersKeyboardPreset";
+import { TaskCard } from "./TaskCard";
+import { hasDraggableData } from "./utils";
 
-type IssueWithUser = Issue & {
+export type IssueWithUser = Issue & {
   assignedToUser: User | null;
 };
 
@@ -74,6 +72,7 @@ interface TaskData {
 type DragData = ColumnData | TaskData;
 
 export function KanbanBoard({ issues }: KanbanBoardProps) {
+  console.log(issues);
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const pickedUpTaskColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
