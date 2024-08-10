@@ -4,6 +4,7 @@ import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
+import Tooltip from './Tooltip';  // Import the Tooltip component
 
 type AvatarGroupProps = {
   selectedUserId: string | null;
@@ -24,14 +25,15 @@ export default function AvatarGroup({ selectedUserId, setSelectedUserId }: Avata
   return (
     <div className="flex -space-x-3 pb-4">
       {users?.map((user) => (
-        <Avatar 
-          key={user.id} 
-          onClick={() => setSelectedUserId(user.id === selectedUserId ? null : user.id)}
-          className={`cursor-pointer ${user.id === selectedUserId ? 'ring-2 ring-blue-500' : ''}`}
-        >
-          <AvatarImage src={user.image || ''} alt={user.name || 'User'} />
-          <AvatarFallback>{user.name?.[0] ?? 'U'}</AvatarFallback>
-        </Avatar>
+        <Tooltip key={user.id} content={user.name || 'Unknown User'}>
+          <Avatar 
+            onClick={() => setSelectedUserId(user.id === selectedUserId ? null : user.id)}
+            className={`cursor-pointer ${user.id === selectedUserId ? 'ring-2 ring-blue-500' : ''}`}
+          >
+            <AvatarImage src={user.image || ''} alt={user.name || 'User'} />
+            <AvatarFallback>{user.name?.[0] ?? 'U'}</AvatarFallback>
+          </Avatar>
+        </Tooltip>
       ))}
     </div>
   );
