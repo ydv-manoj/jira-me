@@ -83,7 +83,7 @@ export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
 
 export function BoardContainer({ children }: { children: React.ReactNode }) {
   return (
-    <ScrollArea className="px-2 md:px-0 flex lg:justify-center pb-4 h-[80vh]">
+    <ScrollArea className="px-2 md:px-0 flex lg:justify-center pb-4 h-[79vh]">
       <div className="flex gap-4 items-center flex-row justify-center">
         {children}
       </div>
