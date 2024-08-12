@@ -7,9 +7,14 @@ import SearchBox from './searchbox/SearchBox';
 
 export default function KanbanPage() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleUserSelect = useCallback((userId: string | null) => {
     setSelectedUserId(userId);
+  }, []);
+
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
   }, []);
 
   return (
@@ -19,10 +24,13 @@ export default function KanbanPage() {
           selectedUserId={selectedUserId}
           setSelectedUserId={handleUserSelect}
         />
-        <SearchBox/>
+        <SearchBox onSearch={handleSearch} />
       </Flex>
-      <KanbanBoardWithQuery key={selectedUserId} selectedUserId={selectedUserId} />
+      <KanbanBoardWithQuery 
+        key={`${selectedUserId}-${searchQuery}`} 
+        selectedUserId={selectedUserId} 
+        searchQuery={searchQuery}
+      />
     </Suspense>
   );
 }
-
