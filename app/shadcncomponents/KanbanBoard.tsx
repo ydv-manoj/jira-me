@@ -30,7 +30,7 @@ export type IssueWithUser = Issue & {
 };
 
 type KanbanBoardProps = {
-  issues:IssueWithUser[]
+  issues: IssueWithUser[]
 };
 
 const defaultCols: Column[] = [
@@ -91,7 +91,7 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-    const tasksByColumn = useMemo(() => {
+  const tasksByColumn = useMemo(() => {
     return columns.reduce((acc, column) => {
       acc[column.id] = tasks.filter((task) => task.columnId === column.id);
       return acc;
@@ -123,20 +123,17 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
       if (active.data.current?.type === "Column") {
         const startColumnIdx = columnsId.findIndex((id) => id === active.id);
         const startColumn = columns[startColumnIdx];
-        return `Picked up Column ${startColumn?.title} at position: ${
-          startColumnIdx + 1
-        } of ${columnsId.length}`;
+        return `Picked up Column ${startColumn?.title} at position: ${startColumnIdx + 1
+          } of ${columnsId.length}`;
       } else if (active.data.current?.type === "Task") {
         pickedUpTaskColumn.current = active.data.current.task.columnId;
         const { tasksInColumn, taskPosition, column } = getDraggingTaskData(
           active.id,
           pickedUpTaskColumn.current!
         );
-        return `Picked up Task ${
-          active.data.current.task.content
-        } at position: ${taskPosition + 1} of ${
-          tasksInColumn.length
-        } in column ${column?.title}`;
+        return `Picked up Task ${active.data.current.task.content
+          } at position: ${taskPosition + 1} of ${tasksInColumn.length
+          } in column ${column?.title}`;
       }
     },
     onDragOver({ active, over }) {
@@ -147,9 +144,8 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
         over.data.current?.type === "Column"
       ) {
         const overColumnIdx = columnsId.findIndex((id) => id === over.id);
-        return `Column ${active.data.current.column.title} was moved over ${
-          over.data.current.column.title
-        } at position ${overColumnIdx + 1} of ${columnsId.length}`;
+        return `Column ${active.data.current.column.title} was moved over ${over.data.current.column.title
+          } at position ${overColumnIdx + 1} of ${columnsId.length}`;
       } else if (
         active.data.current?.type === "Task" &&
         over.data.current?.type === "Task"
@@ -159,15 +155,12 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
           over.data.current.task.columnId
         );
         if (over.data.current.task.columnId !== pickedUpTaskColumn.current) {
-          return `Task ${
-            active.data.current.task.content
-          } was moved over column ${column?.title} in position ${
-            taskPosition + 1
-          } of ${tasksInColumn.length}`;
+          return `Task ${active.data.current.task.content
+            } was moved over column ${column?.title} in position ${taskPosition + 1
+            } of ${tasksInColumn.length}`;
         }
-        return `Task was moved over position ${taskPosition + 1} of ${
-          tasksInColumn.length
-        } in column ${column?.title}`;
+        return `Task was moved over position ${taskPosition + 1} of ${tasksInColumn.length
+          } in column ${column?.title}`;
       }
     },
     onDragEnd({ active, over }) {
@@ -181,11 +174,9 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
       ) {
         const overColumnPosition = columnsId.findIndex((id) => id === over.id);
 
-        return `Column ${
-          active.data.current.column.title
-        } was dropped into position ${overColumnPosition + 1} of ${
-          columnsId.length
-        }`;
+        return `Column ${active.data.current.column.title
+          } was dropped into position ${overColumnPosition + 1} of ${columnsId.length
+          }`;
       } else if (
         active.data.current?.type === "Task" &&
         over.data.current?.type === "Task"
@@ -195,13 +186,11 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
           over.data.current.task.columnId
         );
         if (over.data.current.task.columnId !== pickedUpTaskColumn.current) {
-          return `Task was dropped into column ${column?.title} in position ${
-            taskPosition + 1
-          } of ${tasksInColumn.length}`;
+          return `Task was dropped into column ${column?.title} in position ${taskPosition + 1
+            } of ${tasksInColumn.length}`;
         }
-        return `Task was dropped into position ${taskPosition + 1} of ${
-          tasksInColumn.length
-        } in column ${column?.title}`;
+        return `Task was dropped into position ${taskPosition + 1} of ${tasksInColumn.length
+          } in column ${column?.title}`;
       }
       pickedUpTaskColumn.current = null;
     },
@@ -222,32 +211,32 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
 
   return (
     <Card>
-          <DndContext
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-    >
-      <BoardContainer>
-        <SortableContext items={columns.map((col) => col.id)}>
-          {columns.map((column) => (
+      <DndContext
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+      >
+        <BoardContainer>
+          <SortableContext items={columns.map((col) => col.id)}>
+            {columns.map((column) => (
+              <BoardColumn
+                key={column.id}
+                column={column}
+                tasks={tasksByColumn[column.id]}
+              />
+            ))}
+          </SortableContext>
+        </BoardContainer>
+        <DragOverlay>
+          {activeColumn && (
             <BoardColumn
-              key={column.id}
-              column={column}
-              tasks={tasksByColumn[column.id]}
+              column={activeColumn}
+              tasks={tasksByColumn[activeColumn.id]}
+              isOverlay
             />
-          ))}
-        </SortableContext>
-      </BoardContainer>
-      <DragOverlay>
-        {activeColumn && (
-          <BoardColumn
-            column={activeColumn}
-            tasks={tasksByColumn[activeColumn.id]}
-            isOverlay
-          />
-        )}
-        {activeTask && <TaskCard task={activeTask} isOverlay />}
-      </DragOverlay>
-    </DndContext>
+          )}
+          {activeTask && <TaskCard task={activeTask} isOverlay />}
+        </DragOverlay>
+      </DndContext>
     </Card>
   );
 
@@ -258,7 +247,7 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
       setActiveColumn(data.column);
       return;
     }
-  
+
     if (data.type === "Task") {
       setActiveTask(data.task);
       return;
@@ -296,8 +285,8 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
     }
 
     if (isActiveATask) {
-      const newColumnId = isOverAColumn 
-        ? overId as ColumnId 
+      const newColumnId = isOverAColumn
+        ? overId as ColumnId
         : (overData as TaskData).task.columnId;
 
       // Update the task status via the API
@@ -323,29 +312,29 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
       }
     }
   }
-  
-  
-  
+
+
+
 
   function onDragOver(event: DragOverEvent) {
     const { active, over } = event;
     if (!over) return;
-  
+
     const activeId = active.id;
     const overId = over.id;
-  
+
     if (activeId === overId) return;
-  
+
     if (!hasDraggableData(active) || !hasDraggableData(over)) return;
-  
+
     const activeData = active.data.current as DragData;
     const overData = over.data.current as DragData;
-  
+
     const isActiveATask = activeData.type === "Task";
     const isOverATask = overData.type === "Task";
-  
+
     if (!isActiveATask) return;
-  
+
     // I'm dropping a Task over another Task
     if (isActiveATask && isOverATask) {
       setTasks((tasks) => {
@@ -353,7 +342,7 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
         const overIndex = tasks.findIndex((t) => t.id === overId);
         const activeTask = tasks[activeIndex];
         const overTask = tasks[overIndex];
-  
+
         if (activeTask && overTask && activeTask.columnId !== overTask.columnId) {
           return arrayMove(
             tasks.map((task) =>
@@ -365,13 +354,13 @@ export function KanbanBoard({ issues }: KanbanBoardProps) {
             overIndex - 1
           );
         }
-  
+
         return arrayMove(tasks, activeIndex, overIndex);
       });
     }
-  
+
     const isOverAColumn = overData.type === "Column";
-  
+
     // I'm dropping a Task over a column
     if (isActiveATask && isOverAColumn) {
       setTasks((tasks) =>
