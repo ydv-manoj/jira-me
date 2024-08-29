@@ -22,7 +22,7 @@ export async function POST(request:NextRequest){
 
 
 
-export async function GET(request:NextResponse){
+export async function GET(request:NextRequest){
     const issues = await prisma.issue.findMany({
         include: {
           assignedToUser: true,

@@ -18,6 +18,12 @@ interface BoardColumnProps {
   isOverlay?: boolean;
 }
 
+export interface ColumnDragData {
+  type: 'Column';
+  column: Column;
+}
+
+
 export function BoardColumn({ column, tasks, isOverlay }: BoardColumnProps) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
     id: column.id,
