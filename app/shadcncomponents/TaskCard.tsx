@@ -19,6 +19,10 @@ export interface Task {
   assignedToUserId: string | null;
   assignedToUser:User |null
 }
+export interface TaskDragData {
+  type: 'Task';
+  task: Task;
+}
 
 interface TaskCardProps {
   task: Task;
